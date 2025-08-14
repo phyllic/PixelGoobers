@@ -60,7 +60,7 @@
                     <div class="text-center space-y-8">
                         <h1 class="text-2xl md:text-3xl font-bold glow-white uppercase leading-tight">Secure Your<br>Pixel Goobers<br>Whitelist</h1>
                         
-                        <div id="whitelist-form" class="max-w-md mx-auto space-y-6 text-sm">
+                        <form id="whitelist-form" class="max-w-md mx-auto space-y-6 text-sm">
                             <p class="text-blue-300">Follow Pixel Goobers <a href="https://x.com/PixelGoobers" target="_blank" class="underline hover:text-blue-400">on X</a></p>
                             
                             <div class="relative">
@@ -69,7 +69,7 @@
                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M9.294 6.928L14.357 1h-1.2L8.762 6.147 5.25 1H1.2l5.31 7.643L1.143 15h1.2l4.744-5.428L11.25 15h4.05l-5.996-8.072zM7.653 8.9l-.9-1.286L2.65 2.12h2.1l3.34 4.766.9 1.285 4.42 6.322h-2.1L7.652 8.9z"></path></svg>
                                     </span>
-                                    <input type="text" id="x-handle" class="pixel-input pl-10" placeholder="@yourusername">
+                                    <input type="text" id="x-handle" name="xHandle" class="pixel-input pl-10" placeholder="@yourusername">
                                 </div>
                             </div>
 
@@ -86,7 +86,7 @@
                                      <span class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" /></svg>
                                     </span>
-                                    <input type="text" id="tweet-link" class="pixel-input pl-10" placeholder="https://x.com/yourquotetweet">
+                                    <input type="text" id="tweet-link" name="tweetLink" class="pixel-input pl-10" placeholder="https://x.com/yourquotetweet">
                                 </div>
                             </div>
                             
@@ -96,58 +96,26 @@
                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400">
                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="currentColor"><path d="M311.9 260.8L160 353.6 8 260.8 160 0l151.9 260.8zM160 383.4L8 290.6 160 512l152-221.4-152 92.8z"/></svg>
                                     </span>
-                                    <input type="text" id="evm-address" class="pixel-input pl-10" placeholder="0x...">
+                                    <input type="text" id="evm-address" name="evmAddress" class="pixel-input pl-10" placeholder="0x...">
                                 </div>
                             </div>
 
-                            <button id="submit-btn" class="w-full py-4 bg-green-500 border-2 border-green-300 glow-green glow-green-hover transition-all duration-300 mt-4">
+                            <button id="submit-btn" type="submit" class="w-full py-4 bg-green-500 border-2 border-green-300 glow-green glow-green-hover transition-all duration-300 mt-4">
                                 Submit EVM Address
                             </button>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script type="module">
-        // Import Firebase modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // --- Firebase Configuration ---
-        // These variables are placeholders and will be provided by the environment.
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'pixel-goobers';
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        let db, auth;
-
-        try {
-            // Initialize Firebase
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-
-            // Sign in the user
-            if (initialAuthToken) {
-                await signInWithCustomToken(auth, initialAuthToken);
-            } else {
-                await signInAnonymously(auth);
-            }
-        } catch (error) {
-            console.error("Firebase initialization failed:", error);
-            showMessage("Error connecting to the service.");
-        }
-
+    <script>
         // --- UI Elements ---
+        const form = document.getElementById('whitelist-form');
         const submitBtn = document.getElementById('submit-btn');
         const pageContent = document.getElementById('page-content');
-        const xHandleInput = document.getElementById('x-handle');
-        const tweetLinkInput = document.getElementById('tweet-link');
-        const evmAddressInput = document.getElementById('evm-address');
-        
+
         // --- Functions ---
         function showMessage(message, isError = true) {
             const messageBox = document.getElementById('message-box');
@@ -159,18 +127,23 @@
             }, 3000);
         }
 
-        // --- Event Listeners ---
-        submitBtn.addEventListener('click', async (e) => {
+        // --- Event Listener for Form Submission ---
+        form.addEventListener('submit', (e) => {
             e.preventDefault();
 
-            if (!db) {
-                showMessage("Database not connected. Cannot submit.");
+            // --- IMPORTANT ---
+            // This is your Google Apps Script Web App URL.
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbzdG8EDNm8mXGbcNSu0Nnbyy2HdZef0sFpmn8CMLSwhur3z76CA2kKNb9CbIDEeDS03/exec';
+            // -----------------
+
+            if (scriptURL === 'PASTE_YOUR_WEB_APP_URL_HERE') {
+                showMessage("Form not configured by the developer yet.");
                 return;
             }
-
-            const xHandle = xHandleInput.value.trim();
-            const tweetLink = tweetLinkInput.value.trim();
-            const evmAddress = evmAddressInput.value.trim();
+            
+            const xHandle = document.getElementById('x-handle').value.trim();
+            const tweetLink = document.getElementById('tweet-link').value.trim();
+            const evmAddress = document.getElementById('evm-address').value.trim();
 
             // Basic validation
             if (!xHandle || !tweetLink || !evmAddress) {
@@ -189,31 +162,26 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'Submitting...';
 
-            try {
-                // Save data to Firestore
-                const submissionsCollection = collection(db, `artifacts/${appId}/public/data/submissions`);
-                await addDoc(submissionsCollection, {
-                    xHandle: xHandle,
-                    tweetLink: tweetLink,
-                    evmAddress: evmAddress,
-                    submittedAt: serverTimestamp()
+            // We use 'no-cors' mode to prevent a CORS error. 
+            // The browser won't be able to read the response from Google, but the data will still be submitted.
+            fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new FormData(form)})
+                .then(() => {
+                    // Since we can't read the response, we assume success and show the confirmation message.
+                    pageContent.innerHTML = `
+                        <div class="text-center flex items-center justify-center h-full">
+                            <h2 class="text-xl md:text-3xl font-bold glow-white uppercase leading-loose animate-pulse">
+                                Submission Received!<br><br>Wait for the<br>Whitelist Checker
+                            </h2>
+                        </div>
+                    `;
+                })
+                .catch(error => {
+                    // This will catch network errors, like if the user is offline.
+                    console.error('Error!', error.message);
+                    showMessage("Submission failed. A network error occurred.");
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit EVM Address';
                 });
-
-                // Show success message on the form itself
-                pageContent.innerHTML = `
-                    <div class="text-center flex items-center justify-center h-full">
-                        <h2 class="text-xl md:text-2xl font-bold glow-white uppercase leading-loose animate-pulse">
-                            Submission Received!<br><br>Wait for the<br>Whitelist Checker
-                        </h2>
-                    </div>
-                `;
-
-            } catch (error) {
-                console.error("Error adding document: ", error);
-                showMessage("Submission failed. Please try again.");
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit EVM Address';
-            }
         });
 
         // --- Background Animation Setup ---

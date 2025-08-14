@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <!-- Add Tone.js for sound effects -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <style>
         body { font-family: 'Press Start 2P', cursive; background-color: #0a0a1a; overflow: hidden; }
         .font-pixel { font-family: 'Press Start 2P', cursive; }
@@ -75,7 +77,7 @@
 
                             <div>
                                 <label class="block text-left mb-2 text-gray-300">2. Quote this tweet & mention 2 friends</label>
-                                <a href="https://x.com/PixelGoobers/status/1955517597430190318" target="_blank" class="block w-full text-center py-3 px-4 bg-blue-600 border-2 border-blue-400 glow-blue-hover transition-all duration-300">
+                                <a href="https://x.com/PixelGoobers/status/1811804245635338318" target="_blank" class="block w-full text-center py-3 px-4 bg-blue-600 border-2 border-blue-400 glow-blue-hover transition-all duration-300">
                                     Quote Tweet
                                 </a>
                             </div>
@@ -111,13 +113,49 @@
     </div>
 
     <script>
+        // --- Sound Synthesis Setup ---
+        let soundsReady = false;
+
+        // Create synthesizers for different sound effects
+        const successSynth = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' } }).toDestination();
+        const errorSynth = new Tone.Synth({ oscillator: { type: 'sawtooth' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.1 } }).toDestination();
+        const typingSynth = new Tone.MembraneSynth({ pitchDecay: 0.008, octaves: 2, envelope: { attack: 0.001, decay: 0.2, sustain: 0.01, release: 0.1 } }).toDestination();
+        const invalidSynth = new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.1 } }).toDestination();
+        
+        // Function to play sounds only if audio context is started
+        function playSuccessSound() { if (soundsReady) successSynth.triggerAttackRelease(['C4', 'E4', 'G4', 'C5'], '8n', Tone.now()); }
+        function playErrorSound() { if (soundsReady) errorSynth.triggerAttackRelease('C3', '4n'); }
+        function playTypingSound() { if (soundsReady) typingSynth.triggerAttackRelease("C2", "8n"); }
+        function playInvalidSound() { if (soundsReady) invalidSynth.triggerAttackRelease("G2", "8n"); }
+        
+        // Browsers require user interaction to start audio. This handles that.
+        function initializeAudio() {
+            if (!soundsReady) {
+                Tone.start();
+                soundsReady = true;
+                console.log('Audio context started.');
+                document.body.removeEventListener('click', initializeAudio);
+                document.body.removeEventListener('keydown', initializeAudio);
+            }
+        }
+        document.body.addEventListener('click', initializeAudio);
+        document.body.addEventListener('keydown', initializeAudio);
+
+
         // --- UI Elements ---
         const form = document.getElementById('whitelist-form');
         const submitBtn = document.getElementById('submit-btn');
         const pageContent = document.getElementById('page-content');
+        const inputFields = document.querySelectorAll('.pixel-input');
+
+        // Add sound event listeners
+        inputFields.forEach(el => {
+            el.addEventListener('keydown', playTypingSound);
+        });
 
         // --- Functions ---
         function showMessage(message, isError = true) {
+            // The specific sound is now played before calling this function
             const messageBox = document.getElementById('message-box');
             messageBox.textContent = message;
             messageBox.style.backgroundColor = isError ? '#ff4d4d' : '#00ff7f';
@@ -131,30 +169,24 @@
         form.addEventListener('submit', (e) => {
             e.preventDefault();
 
-            // --- IMPORTANT ---
-            // This is your Google Apps Script Web App URL.
             const scriptURL = 'https://script.google.com/macros/s/AKfycbzdG8EDNm8mXGbcNSu0Nnbyy2HdZef0sFpmn8CMLSwhur3z76CA2kKNb9CbIDEeDS03/exec';
-            // -----------------
-
-            if (scriptURL === 'PASTE_YOUR_WEB_APP_URL_HERE') {
-                showMessage("Form not configured by the developer yet.");
-                return;
-            }
             
             const xHandle = document.getElementById('x-handle').value.trim();
             const tweetLink = document.getElementById('tweet-link').value.trim();
             const evmAddress = document.getElementById('evm-address').value.trim();
 
-            // Basic validation
             if (!xHandle || !tweetLink || !evmAddress) {
+                playInvalidSound();
                 showMessage("Please fill out all fields.");
                 return;
             }
             if (!xHandle.startsWith('@')) {
+                playInvalidSound();
                 showMessage("X handle must start with @.");
                 return;
             }
             if (!evmAddress.startsWith('0x')) {
+                playInvalidSound();
                 showMessage("EVM address must start with 0x.");
                 return;
             }
@@ -162,21 +194,19 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'Submitting...';
 
-            // We use 'no-cors' mode to prevent a CORS error. 
-            // The browser won't be able to read the response from Google, but the data will still be submitted.
             fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new FormData(form)})
                 .then(() => {
-                    // Since we can't read the response, we assume success and show the confirmation message.
+                    playSuccessSound();
                     pageContent.innerHTML = `
                         <div class="text-center flex items-center justify-center h-full">
-                            <h2 class="text-xl md:text-3xl font-bold glow-white uppercase leading-loose animate-pulse">
+                            <h2 class="text-xl md:text-2xl font-bold glow-white uppercase leading-loose animate-pulse">
                                 Submission Received!<br><br>Wait for the<br>Whitelist Checker
                             </h2>
                         </div>
                     `;
                 })
                 .catch(error => {
-                    // This will catch network errors, like if the user is offline.
+                    playErrorSound(); // For network errors
                     console.error('Error!', error.message);
                     showMessage("Submission failed. A network error occurred.");
                     submitBtn.disabled = false;
@@ -226,4 +256,3 @@
     </script>
 </body>
 </html>
-

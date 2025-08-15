@@ -29,14 +29,6 @@
         @keyframes float { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-20px) rotate(10deg); } 100% { transform: translateY(0px) rotate(0deg); } }
         .monitor-frame { border: 20px solid #222; border-radius: 20px; box-shadow: 0 0 50px rgba(0, 170, 255, 0.3), inset 0 0 15px rgba(0,0,0,0.7); background: #111; padding: 10px; }
         #message-box { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background-color: #ff4d4d; color: white; padding: 10px 20px; border-radius: 5px; z-index: 1000; display: none; font-size: 0.8rem; box-shadow: 0 0 10px #ff4d4d; }
-        .hidden { display: none; }
-        .shake { animation: shake 0.5s; }
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
-        }
     </style>
 </head>
 <body class="font-pixel text-white flex items-center justify-center min-h-screen p-4">
@@ -67,21 +59,8 @@
                 </div>
 
                 <!-- Page Content -->
-                <div id="page-content" class="flex-grow p-6 md:p-8 overflow-y-auto flex items-center justify-center">
-                    
-                    <!-- Access Gate -->
-                    <div id="access-gate" class="text-center space-y-8">
-                        <h1 class="text-2xl md:text-3xl font-bold glow-white uppercase leading-tight">Enter Access Code</h1>
-                        <form id="gate-form" class="max-w-xs mx-auto space-y-4">
-                            <input type="text" id="access-code-input" class="pixel-input text-center uppercase" placeholder="******">
-                            <button id="gate-submit-btn" type="submit" class="w-full py-3 bg-blue-600 border-2 border-blue-400 glow-blue-hover transition-all duration-300">
-                                Enter
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- Main Submission Form (Initially Hidden) -->
-                    <div id="main-content" class="hidden text-center space-y-8">
+                <div id="page-content" class="flex-grow p-6 md:p-8 overflow-y-auto">
+                    <div class="text-center space-y-8">
                         <h1 class="text-2xl md:text-3xl font-bold glow-white uppercase leading-tight">Secure Your<br>Pixel Goobers<br>Whitelist</h1>
                         
                         <form id="whitelist-form" class="max-w-md mx-auto space-y-6 text-sm">
@@ -99,7 +78,7 @@
 
                             <div>
                                 <label class="block text-left mb-2 text-gray-300">2. like , retweet , Mention 2 and Reply with Address</label>
-                                <a href="https://x.com/PixelGoobers/status/1955517597430190318" target="_blank" class="block w-full text-center py-3 px-4 bg-blue-600 border-2 border-blue-400 glow-blue-hover transition-all duration-300">
+                                <a href="https://x.com/PixelGoobers/status/1955949288846188632" target="_blank" class="block w-full text-center py-3 px-4 bg-blue-600 border-2 border-blue-400 glow-blue-hover transition-all duration-300">
                                     Tweet
                                 </a>
                             </div>
@@ -138,16 +117,19 @@
         // --- Sound Synthesis Setup ---
         let soundsReady = false;
 
+        // Create synthesizers for different sound effects
         const successSynth = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' } }).toDestination();
         const errorSynth = new Tone.Synth({ oscillator: { type: 'sawtooth' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.1 } }).toDestination();
         const typingSynth = new Tone.MembraneSynth({ pitchDecay: 0.008, octaves: 2, envelope: { attack: 0.001, decay: 0.2, sustain: 0.01, release: 0.1 } }).toDestination();
         const invalidSynth = new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.1 } }).toDestination();
         
+        // Function to play sounds only if audio context is started
         function playSuccessSound() { if (soundsReady) successSynth.triggerAttackRelease(['C4', 'E4', 'G4', 'C5'], '8n', Tone.now()); }
         function playErrorSound() { if (soundsReady) errorSynth.triggerAttackRelease('C3', '4n'); }
         function playTypingSound() { if (soundsReady) typingSynth.triggerAttackRelease("C2", "8n"); }
         function playInvalidSound() { if (soundsReady) invalidSynth.triggerAttackRelease("G2", "8n"); }
         
+        // Browsers require user interaction to start audio. This handles that.
         function initializeAudio() {
             if (!soundsReady) {
                 Tone.start();
@@ -160,39 +142,21 @@
         document.body.addEventListener('click', initializeAudio);
         document.body.addEventListener('keydown', initializeAudio);
 
+
         // --- UI Elements ---
-        const accessGate = document.getElementById('access-gate');
-        const mainContent = document.getElementById('main-content');
-        const gateForm = document.getElementById('gate-form');
-        const accessCodeInput = document.getElementById('access-code-input');
-        const whitelistForm = document.getElementById('whitelist-form');
+        const form = document.getElementById('whitelist-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const pageContent = document.getElementById('page-content');
         const inputFields = document.querySelectorAll('.pixel-input');
 
-        // --- Access Gate Logic ---
-        const ACCESS_CODE = "GOOBERS";
-
-        gateForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            if (accessCodeInput.value.trim().toUpperCase() === ACCESS_CODE) {
-                playSuccessSound();
-                accessGate.classList.add('hidden');
-                mainContent.classList.remove('hidden');
-            } else {
-                playInvalidSound();
-                accessCodeInput.classList.add('shake');
-                showMessage("Invalid Access Code");
-                setTimeout(() => {
-                    accessCodeInput.classList.remove('shake');
-                }, 500);
-            }
-        });
-
-        // --- Main Form Logic ---
+        // Add sound event listeners
         inputFields.forEach(el => {
             el.addEventListener('keydown', playTypingSound);
         });
 
+        // --- Functions ---
         function showMessage(message, isError = true) {
+            // The specific sound is now played before calling this function
             const messageBox = document.getElementById('message-box');
             messageBox.textContent = message;
             messageBox.style.backgroundColor = isError ? '#ff4d4d' : '#00ff7f';
@@ -202,9 +166,12 @@
             }, 3000);
         }
 
-        whitelistForm.addEventListener('submit', (e) => {
+        // --- Event Listener for Form Submission ---
+        form.addEventListener('submit', (e) => {
             e.preventDefault();
+
             const scriptURL = 'https://script.google.com/macros/s/AKfycbzdG8EDNm8mXGbcNSu0Nnbyy2HdZef0sFpmn8CMLSwhur3z76CA2kKNb9CbIDEeDS03/exec';
+            
             const xHandle = document.getElementById('x-handle').value.trim();
             const tweetLink = document.getElementById('tweet-link').value.trim();
             const evmAddress = document.getElementById('evm-address').value.trim();
@@ -225,14 +192,13 @@
                 return;
             }
 
-            const submitBtn = document.getElementById('submit-btn');
             submitBtn.disabled = true;
             submitBtn.textContent = 'Submitting...';
 
-            fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new FormData(whitelistForm)})
+            fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new FormData(form)})
                 .then(() => {
                     playSuccessSound();
-                    mainContent.innerHTML = `
+                    pageContent.innerHTML = `
                         <div class="text-center flex items-center justify-center h-full">
                             <h2 class="text-xl md:text-2xl font-bold glow-white uppercase leading-loose animate-pulse">
                                 Submission Received!<br><br>Wait for the<br>Whitelist Checker
@@ -241,7 +207,7 @@
                     `;
                 })
                 .catch(error => {
-                    playErrorSound();
+                    playErrorSound(); // For network errors
                     console.error('Error!', error.message);
                     showMessage("Submission failed. A network error occurred.");
                     submitBtn.disabled = false;

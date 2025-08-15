@@ -59,15 +59,17 @@
                 </div>
 
                 <!-- Page Content -->
-                <div id="page-content" class="flex-grow p-6 md:p-8 overflow-y-auto">
-                    <div class="text-center space-y-8">
+                <div id="page-content" class="flex-grow p-6 md:p-8 overflow-y-auto flex items-center justify-center">
+                    
+                    <!-- Main Submission Form -->
+                    <div class="text-center space-y-8 w-full">
                         <h1 class="text-2xl md:text-3xl font-bold glow-white uppercase leading-tight">Secure Your<br>Pixel Goobers<br>Whitelist</h1>
                         
                         <form id="whitelist-form" class="max-w-md mx-auto space-y-6 text-sm">
-                            <p class="text-blue-300">Follow Pixel Goobers <a href="https://x.com/PixelGoobers" target="_blank" class="underline hover:text-blue-400">on X</a></p>
+                            <p class="block text-left mb-2 text-gray-300">1. Follow Pixel Goobers <a href="https://x.com/PixelGoobers" target="_blank" class="text-blue-300 underline hover:text-blue-400">on X</a></p>
                             
                             <div class="relative">
-                                <label for="x-handle" class="block text-left mb-2 text-gray-300">1. Enter your X handle</label>
+                                <label for="x-handle" class="block text-left mb-2 text-gray-300">2. Enter your X handle</label>
                                 <div class="flex items-center">
                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M9.294 6.928L14.357 1h-1.2L8.762 6.147 5.25 1H1.2l5.31 7.643L1.143 15h1.2l4.744-5.428L11.25 15h4.05l-5.996-8.072zM7.653 8.9l-.9-1.286L2.65 2.12h2.1l3.34 4.766.9 1.285 4.42 6.322h-2.1L7.652 8.9z"></path></svg>
@@ -77,14 +79,14 @@
                             </div>
 
                             <div>
-                                <label class="block text-left mb-2 text-gray-300">2. like , retweet , Mention 2 and Reply with Address</label>
-                                <a href="https://x.com/PixelGoobers/status/1955949288846188632" target="_blank" class="block w-full text-center py-3 px-4 bg-blue-600 border-2 border-blue-400 glow-blue-hover transition-all duration-300">
+                                <label class="block text-left mb-2 text-gray-300">3. like , retweet , Mention 2 Friend and Reply with Evm Address</label>
+                                <a href="https://x.com/PixelGoobers/status/1956309164726366669" target="_blank" class="block w-full text-center py-3 px-4 bg-blue-600 border-2 border-blue-400 glow-blue-hover transition-all duration-300">
                                     Tweet
                                 </a>
                             </div>
 
                             <div class="relative">
-                                <label for="tweet-link" class="block text-left mb-2 text-gray-300">3. Submit your reply link</label>
+                                <label for="tweet-link" class="block text-left mb-2 text-gray-300">4. Submit your reply link</label>
                                 <div class="flex items-center">
                                      <span class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" /></svg>
@@ -94,7 +96,7 @@
                             </div>
                             
                             <div class="relative">
-                                <label for="evm-address" class="block text-left mb-2 text-gray-300">4. Drop your EVM (0x..)</label>
+                                <label for="evm-address" class="block text-left mb-2 text-gray-300">5. Enter Your EVM address (0x..)</label>
                                 <div class="flex items-center">
                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400">
                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="currentColor"><path d="M311.9 260.8L160 353.6 8 260.8 160 0l151.9 260.8zM160 383.4L8 290.6 160 512l152-221.4-152 92.8z"/></svg>
@@ -117,19 +119,16 @@
         // --- Sound Synthesis Setup ---
         let soundsReady = false;
 
-        // Create synthesizers for different sound effects
         const successSynth = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' } }).toDestination();
         const errorSynth = new Tone.Synth({ oscillator: { type: 'sawtooth' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.1 } }).toDestination();
         const typingSynth = new Tone.MembraneSynth({ pitchDecay: 0.008, octaves: 2, envelope: { attack: 0.001, decay: 0.2, sustain: 0.01, release: 0.1 } }).toDestination();
         const invalidSynth = new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.1 } }).toDestination();
         
-        // Function to play sounds only if audio context is started
         function playSuccessSound() { if (soundsReady) successSynth.triggerAttackRelease(['C4', 'E4', 'G4', 'C5'], '8n', Tone.now()); }
         function playErrorSound() { if (soundsReady) errorSynth.triggerAttackRelease('C3', '4n'); }
         function playTypingSound() { if (soundsReady) typingSynth.triggerAttackRelease("C2", "8n"); }
         function playInvalidSound() { if (soundsReady) invalidSynth.triggerAttackRelease("G2", "8n"); }
         
-        // Browsers require user interaction to start audio. This handles that.
         function initializeAudio() {
             if (!soundsReady) {
                 Tone.start();
@@ -142,21 +141,16 @@
         document.body.addEventListener('click', initializeAudio);
         document.body.addEventListener('keydown', initializeAudio);
 
-
         // --- UI Elements ---
-        const form = document.getElementById('whitelist-form');
-        const submitBtn = document.getElementById('submit-btn');
-        const pageContent = document.getElementById('page-content');
+        const whitelistForm = document.getElementById('whitelist-form');
         const inputFields = document.querySelectorAll('.pixel-input');
 
-        // Add sound event listeners
+        // --- Main Form Logic ---
         inputFields.forEach(el => {
             el.addEventListener('keydown', playTypingSound);
         });
 
-        // --- Functions ---
         function showMessage(message, isError = true) {
-            // The specific sound is now played before calling this function
             const messageBox = document.getElementById('message-box');
             messageBox.textContent = message;
             messageBox.style.backgroundColor = isError ? '#ff4d4d' : '#00ff7f';
@@ -166,12 +160,9 @@
             }, 3000);
         }
 
-        // --- Event Listener for Form Submission ---
-        form.addEventListener('submit', (e) => {
+        whitelistForm.addEventListener('submit', (e) => {
             e.preventDefault();
-
             const scriptURL = 'https://script.google.com/macros/s/AKfycbzdG8EDNm8mXGbcNSu0Nnbyy2HdZef0sFpmn8CMLSwhur3z76CA2kKNb9CbIDEeDS03/exec';
-            
             const xHandle = document.getElementById('x-handle').value.trim();
             const tweetLink = document.getElementById('tweet-link').value.trim();
             const evmAddress = document.getElementById('evm-address').value.trim();
@@ -192,12 +183,14 @@
                 return;
             }
 
+            const submitBtn = document.getElementById('submit-btn');
             submitBtn.disabled = true;
             submitBtn.textContent = 'Submitting...';
 
-            fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new FormData(form)})
+            fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new FormData(whitelistForm)})
                 .then(() => {
                     playSuccessSound();
+                    const pageContent = document.getElementById('page-content');
                     pageContent.innerHTML = `
                         <div class="text-center flex items-center justify-center h-full">
                             <h2 class="text-xl md:text-2xl font-bold glow-white uppercase leading-loose animate-pulse">
@@ -207,7 +200,7 @@
                     `;
                 })
                 .catch(error => {
-                    playErrorSound(); // For network errors
+                    playErrorSound();
                     console.error('Error!', error.message);
                     showMessage("Submission failed. A network error occurred.");
                     submitBtn.disabled = false;

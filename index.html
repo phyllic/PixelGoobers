@@ -25,10 +25,27 @@
         #cosmic-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: #00000c; background: linear-gradient(135deg, #00000c 0%, #1a0033 50%, #0d001a 100%); }
         .star { position: absolute; background-color: white; border-radius: 50%; animation: twinkle 2s infinite ease-in-out; }
         @keyframes twinkle { 0%, 100% { opacity: 0.5; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
-        .goober { position: absolute; width: 40px; height: 40px; animation: float 10s infinite ease-in-out; }
+        .goober { position: absolute; width: 40px; height: 40px; animation: float 10s infinite ease-in-out; transition: transform 0.3s ease-out; }
         @keyframes float { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-20px) rotate(10deg); } 100% { transform: translateY(0px) rotate(0deg); } }
         .monitor-frame { border: 20px solid #222; border-radius: 20px; box-shadow: 0 0 50px rgba(0, 170, 255, 0.3), inset 0 0 15px rgba(0,0,0,0.7); background: #111; padding: 10px; }
         #message-box { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background-color: #ff4d4d; color: white; padding: 10px 20px; border-radius: 5px; z-index: 1000; display: none; font-size: 0.8rem; box-shadow: 0 0 10px #ff4d4d; }
+        
+        /* New Animations */
+        .goober.jiggle { animation: jiggle 0.5s ease-in-out; }
+        @keyframes jiggle {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(5px, -5px) rotate(5deg); }
+            50% { transform: translate(-5px, 5px) rotate(-5deg); }
+            75% { transform: translate(5px, 5px) rotate(5deg); }
+        }
+
+        .input-wrapper:focus-within .input-icon {
+            animation: icon-pulse 0.6s ease-in-out;
+        }
+        @keyframes icon-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
     </style>
 </head>
 <body class="font-pixel text-white flex items-center justify-center min-h-screen p-4">
@@ -68,10 +85,10 @@
                         <form id="whitelist-form" class="max-w-md mx-auto space-y-6 text-sm">
                             <p class="block text-left mb-2 text-gray-300">1. Follow Pixel Goobers <a href="https://x.com/PixelGoobers" target="_blank" class="text-blue-300 underline hover:text-blue-400">on X</a></p>
                             
-                            <div class="relative">
+                            <div class="relative input-wrapper">
                                 <label for="x-handle" class="block text-left mb-2 text-gray-300">2. Enter your X handle</label>
                                 <div class="flex items-center">
-                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 input-icon">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M9.294 6.928L14.357 1h-1.2L8.762 6.147 5.25 1H1.2l5.31 7.643L1.143 15h1.2l4.744-5.428L11.25 15h4.05l-5.996-8.072zM7.653 8.9l-.9-1.286L2.65 2.12h2.1l3.34 4.766.9 1.285 4.42 6.322h-2.1L7.652 8.9z"></path></svg>
                                     </span>
                                     <input type="text" id="x-handle" name="xHandle" class="pixel-input pl-10" placeholder="@yourusername">
@@ -85,20 +102,20 @@
                                 </a>
                             </div>
 
-                            <div class="relative">
+                            <div class="relative input-wrapper">
                                 <label for="tweet-link" class="block text-left mb-2 text-gray-300">4. Submit your reply link</label>
                                 <div class="flex items-center">
-                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400">
+                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 input-icon">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" /></svg>
                                     </span>
-                                    <input type="text" id="tweet-link" name="tweetLink" class="pixel-input pl-10" placeholder="https://x.com/yourquotetweet">
+                                    <input type="text" id="tweet-link" name="tweetLink" class="pixel-input pl-10" placeholder="https://x.com/yourtweet">
                                 </div>
                             </div>
                             
-                            <div class="relative">
+                            <div class="relative input-wrapper">
                                 <label for="evm-address" class="block text-left mb-2 text-gray-300">5. Enter Your EVM address (0x..)</label>
                                 <div class="flex items-center">
-                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 input-icon">
                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="currentColor"><path d="M311.9 260.8L160 353.6 8 260.8 160 0l151.9 260.8zM160 383.4L8 290.6 160 512l152-221.4-152 92.8z"/></svg>
                                     </span>
                                     <input type="text" id="evm-address" name="evmAddress" class="pixel-input pl-10" placeholder="0x...">
@@ -177,6 +194,11 @@
                 showMessage("X handle must start with @.");
                 return;
             }
+            if (!tweetLink.startsWith('https://x.com')) {
+                playInvalidSound();
+                showMessage("Submit your reply link");
+                return;
+            }
             if (!evmAddress.startsWith('0x')) {
                 playInvalidSound();
                 showMessage("EVM address must start with 0x.");
@@ -212,6 +234,7 @@
         const background = document.getElementById('cosmic-background');
         const numStars = 150;
         const numGoobers = 15;
+        let gooberElements = [];
 
         for (let i = 0; i < numStars; i++) {
             const star = document.createElement('div');
@@ -245,9 +268,32 @@
 
         for (let i = 0; i < numGoobers; i++) {
             const design = gooberDesigns[i % gooberDesigns.length];
-            background.innerHTML += createGooberSVG(design);
+            background.insertAdjacentHTML('beforeend', createGooberSVG(design));
         }
+        
+        // --- Interactive Goober Logic ---
+        gooberElements = document.querySelectorAll('.goober');
+        document.addEventListener('mousemove', (e) => {
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+
+            gooberElements.forEach(goober => {
+                if (goober.classList.contains('jiggle')) return; // Don't interrupt animation
+
+                const rect = goober.getBoundingClientRect();
+                const gooberX = rect.left + rect.width / 2;
+                const gooberY = rect.top + rect.height / 2;
+
+                const distance = Math.sqrt(Math.pow(mouseX - gooberX, 2) + Math.pow(mouseY - gooberY, 2));
+
+                if (distance < 50) { // Proximity threshold
+                    goober.classList.add('jiggle');
+                    setTimeout(() => {
+                        goober.classList.remove('jiggle');
+                    }, 500); // Animation duration
+                }
+            });
+        });
     </script>
 </body>
 </html>
-

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Goobers - Whitelist Checker</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/phyllic/GoobersPNG/main/goober.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <style>
+        body { font-family: 'Press Start 2P', cursive; background-color: #0a0a1a; overflow: hidden; }
+        .font-pixel { font-family: 'Press Start 2P', cursive; }
+        .glow-white { text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #00aaff, 0 0 20px #00aaff; }
+        .glow-green { box-shadow: 0 0 5px #00ff7f, 0 0 10px #00ff7f, 0 0 15px #00ff7f, 0 0 20px #00ff7f, inset 0 0 5px #00ff7f; border-color: #00ff7f; }
+        .glow-blue-hover:hover { box-shadow: 0 0 8px #00d5ff, 0 0 15px #00d5ff, 0 0 20px #00d5ff, 0 0 25px #00d5ff, inset 0 0 8px #00d5ff; }
+        .pixel-input { background-color: rgba(10, 10, 26, 0.7); border: 2px solid #4a00e0; color: white; padding: 10px; width: 100%; outline: none; transition: all 0.3s ease; }
+        .pixel-input:focus { border-color: #00aaff; box-shadow: 0 0 10px #00aaff; }
+        .pixel-input::placeholder { color: #aaa; font-family: 'Press Start 2P', cursive; }
+        #cosmic-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: #00000c; background: linear-gradient(135deg, #00000c 0%, #1a0033 50%, #0d001a 100%); }
+        .star { position: absolute; background-color: white; border-radius: 50%; animation: twinkle 2s infinite ease-in-out; }
+        @keyframes twinkle { 0%, 100% { opacity: 0.5; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
+        .monitor-frame { border: 20px solid #222; border-radius: 20px; box-shadow: 0 0 50px rgba(0, 170, 255, 0.3), inset 0 0 15px rgba(0,0,0,0.7); background: #111; padding: 10px; }
+        #result-box {
+            background: rgba(0,0,0,0.3);
+            border: 2px dashed #4a00e0;
+            padding: 2rem;
+            margin-top: 2rem;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="font-pixel text-white flex items-center justify-center min-h-screen p-4">
+
+    <div id="cosmic-background"></div>
+
+    <!-- Main Monitor Container -->
+    <div class="monitor-frame w-full max-w-4xl h-[90vh]">
+        <div class="h-full">
+            <div class="w-full h-full bg-black/50 rounded-lg overflow-hidden flex flex-col">
+                <!-- Browser Chrome -->
+                <div class="bg-gray-800/80 p-2 flex items-center text-xs">
+                    <div class="flex space-x-1.5 mr-4">
+                        <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                        <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                    </div>
+                    <div class="bg-gray-700/80 rounded-md px-3 py-1 flex-grow flex items-center">
+                        <span class="text-gray-400">pixelgoobers.com/checker</span>
+                    </div>
+                </div>
+                <div class="bg-gray-900/80 px-4 py-1 text-xs border-b border-gray-700">
+                    <div class="bg-gray-700/80 inline-block px-4 py-1 rounded-t-md">
+                        Whitelist Checker
+                    </div>
+                </div>
+
+                <!-- Page Content -->
+                <div id="page-content" class="flex-grow p-6 md:p-8 overflow-y-auto flex items-center justify-center">
+                    <div class="text-center space-y-8 w-full max-w-md mx-auto">
+                        <h1 class="text-2xl md:text-3xl font-bold glow-white uppercase leading-tight">Whitelist<br>Status Checker</h1>
+                        
+                        <form id="checker-form" class="space-y-4 text-sm">
+                            <div>
+                                <label for="evm-address-check" class="block text-left mb-2 text-gray-300">Enter Your EVM Address</label>
+                                <input type="text" id="evm-address-check" class="pixel-input text-center" placeholder="0x...">
+                            </div>
+                            <button id="check-btn" type="submit" class="w-full py-3 bg-blue-600 border-2 border-blue-400 glow-blue-hover transition-all duration-300">
+                                Check Status
+                            </button>
+                        </form>
+
+                        <div id="result-box">
+                            <p id="result-text" class="text-gray-500">Your status will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let soundsReady = false;
+        const successSynth = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' } }).toDestination();
+        const errorSynth = new Tone.Synth({ oscillator: { type: 'sawtooth' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.1 } }).toDestination();
+        
+        function playSuccessSound() { if (soundsReady) successSynth.triggerAttackRelease(['C5', 'E5', 'G5'], '8n', Tone.now()); }
+        function playErrorSound() { if (soundsReady) errorSynth.triggerAttackRelease('C3', '4n'); }
+        
+        function initializeAudio() {
+            if (!soundsReady) {
+                Tone.start();
+                soundsReady = true;
+                document.body.removeEventListener('click', initializeAudio);
+            }
+        }
+        document.body.addEventListener('click', initializeAudio);
+
+        const checkerForm = document.getElementById('checker-form');
+        const checkBtn = document.getElementById('check-btn');
+        const resultText = document.getElementById('result-text');
+        const evmAddressInput = document.getElementById('evm-address-check');
+        
+        // IMPORTANT: Use the same script URL from your submission page.
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzdG8EDNm8mXGbcNSu0Nnbyy2HdZef0sFpmn8CMLSwhur3z76CA2kKNb9CbIDEeDS03/exec';
+
+        checkerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const addressToCheck = evmAddressInput.value.trim().toLowerCase();
+
+            if (!addressToCheck.startsWith('0x')) {
+                resultText.textContent = "Please enter a valid EVM address.";
+                resultText.className = 'text-red-500';
+                playErrorSound();
+                return;
+            }
+
+            checkBtn.disabled = true;
+            checkBtn.textContent = 'Checking...';
+            resultText.textContent = 'Searching the blockchain...';
+            resultText.className = 'text-gray-500 animate-pulse';
+
+            fetch(scriptURL)
+                .then(res => res.json())
+                .then(data => {
+                    const found = data.some(row => row["EVM Address"] && row["EVM Address"].toLowerCase() === addressToCheck);
+                    
+                    if (found) {
+                        resultText.textContent = "Congratulations! You are on the whitelist!";
+                        resultText.className = 'text-green-400 glow-white';
+                        playSuccessSound();
+                    } else {
+                        resultText.textContent = "Address not found on the whitelist.";
+                        resultText.className = 'text-red-500';
+                        playErrorSound();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    resultText.textContent = "Error checking status. Please try again.";
+                    resultText.className = 'text-red-500';
+                    playErrorSound();
+                })
+                .finally(() => {
+                    checkBtn.disabled = false;
+                    checkBtn.textContent = 'Check Status';
+                });
+        });
+
+        // --- Background Animation Setup ---
+        const background = document.getElementById('cosmic-background');
+        for (let i = 0; i < 150; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 2 + 1;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.animationDelay = `${Math.random() * 2}s`;
+            star.style.animationDuration = `${Math.random() * 2 + 1}s`;
+            background.appendChild(star);
+        }
+    </script>
+</body>
+</html>

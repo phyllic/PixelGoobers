@@ -14,20 +14,98 @@
     <style>
         body { font-family: 'Press Start 2P', cursive; background-color: #0a0a1a; overflow-x: hidden; }
         .font-pixel { font-family: 'Press Start 2P', cursive; }
-        .glow-white { text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #00aaff, 0 0 20px #00aaff; }
-        .glow-green { box-shadow: 0 0 5px #00ff7f, 0 0 10px #00ff7f, 0 0 15px #00ff7f, 0 0 20px #00ff7f, inset 0 0 5px #00ff7f; border-color: #00ff7f; }
-        .glow-blue { box-shadow: 0 0 5px #00aaff, 0 0 10px #00aaff, 0 0 15px #00aaff, 0 0 20px #00aaff, inset 0 0 5px #00aaff; border-color: #00aaff; }
-        .glow-blue-hover:hover { box-shadow: 0 0 8px #00d5ff, 0 0 15px #00d5ff, 0 0 20px #00d5ff, 0 0 25px #00d5ff, inset 0 0 8px #00d5ff; }
-        .glow-green-hover:hover { box-shadow: 0 0 8px #0aff99, 0 0 15px #0aff99, 0 0 20px #0aff99, 0 0 25px #0aff99, inset 0 0 8px #0aff99; }
+        
+        /* --- Enhanced Glow & Gradient Effects --- */
+        .glow-white { 
+            background: linear-gradient(90deg, #00aaff, #fff, #00ff7f, #fff, #00aaff);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shimmer-text 5s linear infinite;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(0, 170, 255, 0.5);
+        }
+        @keyframes shimmer-text {
+            to { background-position: 200% center; }
+        }
+
+        .btn {
+            position: relative;
+            overflow: hidden;
+            border: 2px solid;
+            transition: all 0.3s ease;
+        }
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, rgba(255,255,255,0.3), transparent 30%);
+            animation: rotate 4s linear infinite;
+        }
+        .btn:hover::before {
+            animation-play-state: paused;
+        }
+        @keyframes rotate {
+            to { transform: rotate(360deg); }
+        }
+
+        .glow-blue { 
+            background: linear-gradient(45deg, #0055ff, #00aaff);
+            border-color: #00aaff;
+            box-shadow: 0 0 10px #00aaff, inset 0 0 5px rgba(0,0,0,0.5);
+        }
+        .glow-blue:hover {
+            box-shadow: 0 0 20px #00d5ff, 0 0 30px #00d5ff, inset 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        .glow-green {
+            background: linear-gradient(45deg, #00ff7f, #39ff14);
+            border-color: #00ff7f;
+            box-shadow: 0 0 10px #00ff7f, inset 0 0 5px rgba(0,0,0,0.5);
+        }
+        .glow-green:hover {
+             box-shadow: 0 0 20px #0aff99, 0 0 30px #0aff99, inset 0 0 5px rgba(0,0,0,0.5);
+        }
+
         .pixel-input { background-color: rgba(10, 10, 26, 0.7); border: 2px solid #4a00e0; color: white; padding: 10px; width: 100%; outline: none; transition: all 0.3s ease; }
-        .pixel-input:focus { border-color: #00aaff; box-shadow: 0 0 10px #00aaff; }
+        .pixel-input:focus { 
+            border-color: #00aaff; 
+            box-shadow: 0 0 10px #00aaff;
+            animation: flicker-border 1.5s infinite;
+        }
+        @keyframes flicker-border {
+            0%, 100% { box-shadow: 0 0 10px #00aaff; }
+            50% { box-shadow: 0 0 15px #00d5ff, 0 0 5px #00aaff; }
+        }
+
         .pixel-input::placeholder { color: #aaa; font-family: 'Press Start 2P', cursive; }
         #cosmic-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: #00000c; background: linear-gradient(135deg, #00000c 0%, #1a0033 50%, #0d001a 100%); }
-        .star { position: absolute; background-color: white; border-radius: 50%; animation: twinkle 2s infinite ease-in-out; }
-        @keyframes twinkle { 0%, 100% { opacity: 0.5; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
-        .goober { position: absolute; width: 40px; height: 40px; animation: float 10s infinite ease-in-out; }
-        @keyframes float { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-20px) rotate(10deg); } 100% { transform: translateY(0px) rotate(0deg); } }
-        .monitor-frame { border: 20px solid #222; border-radius: 20px; box-shadow: 0 0 50px rgba(0, 170, 255, 0.3), inset 0 0 15px rgba(0,0,0,0.7); background: #111; padding: 10px; }
+        .star { position: absolute; background-color: white; border-radius: 50%; animation: twinkle-color 4s infinite ease-in-out; }
+        @keyframes twinkle-color { 
+            0%, 100% { opacity: 0.5; transform: scale(0.8); background-color: #fff; } 
+            50% { opacity: 1; transform: scale(1.2); background-color: #00ffff; } 
+        }
+        .goober { position: absolute; width: 40px; height: 40px; animation: float-bounce 10s infinite ease-in-out; }
+        @keyframes float-bounce { 
+            0%, 100% { transform: translateY(0px) rotate(0deg); } 
+            25% { transform: translateY(-25px) rotate(10deg) scale(1.1); }
+            50% { transform: translateY(0px) rotate(0deg); }
+            75% { transform: translateY(-15px) rotate(-10deg); }
+        }
+        .monitor-frame { 
+            border: 20px solid #222; 
+            border-radius: 20px; 
+            box-shadow: 0 0 50px rgba(0, 170, 255, 0.3), inset 0 0 15px rgba(0,0,0,0.7); 
+            background: #111; padding: 10px; 
+            animation: monitor-glow 5s infinite ease-in-out;
+        }
+        @keyframes monitor-glow {
+            0%, 100% { box-shadow: 0 0 50px rgba(0, 170, 255, 0.3), inset 0 0 15px rgba(0,0,0,0.7); }
+            50% { box-shadow: 0 0 60px rgba(0, 213, 255, 0.4), inset 0 0 20px rgba(0,0,0,0.8); }
+        }
         #message-box { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background-color: #ff4d4d; color: white; padding: 10px 20px; border-radius: 5px; z-index: 1000; display: none; font-size: 0.8rem; box-shadow: 0 0 10px #ff4d4d; }
     </style>
 </head>
@@ -96,7 +174,7 @@
 
                             <div>
                                 <label class="block text-left mb-2 text-gray-300">3. like , retweet , Mention 2 Friend and Reply with Evm Address</label>
-                                <a href="https://x.com/PixelGoobers/status/1956311042453127459" target="_blank" class="block w-full text-center py-3 px-4 bg-blue-600 border-2 border-blue-400 glow-blue-hover transition-all duration-300">
+                                <a href="https://x.com/PixelGoobers/status/1956311042453127459" target="_blank" class="btn glow-blue block w-full text-center py-3 px-4">
                                     Tweet
                                 </a>
                             </div>
@@ -121,7 +199,7 @@
                                 </div>
                             </div>
 
-                            <button id="submit-btn" type="submit" class="w-full py-4 bg-green-500 border-2 border-green-300 glow-green glow-green-hover transition-all duration-300 mt-4">
+                            <button id="submit-btn" type="submit" class="btn glow-green w-full py-4 mt-4">
                                 Submit EVM Address
                             </button>
                         </form>
@@ -242,8 +320,8 @@
             star.style.height = `${size}px`;
             star.style.top = `${Math.random() * 100}%`;
             star.style.left = `${Math.random() * 100}%`;
-            star.style.animationDelay = `${Math.random() * 2}s`;
-            star.style.animationDuration = `${Math.random() * 2 + 1}s`;
+            star.style.animationDelay = `${Math.random() * 4}s`;
+            star.style.animationDuration = `${Math.random() * 2 + 2}s`;
             background.appendChild(star);
         }
 

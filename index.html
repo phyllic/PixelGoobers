@@ -107,6 +107,18 @@
             50% { box-shadow: 0 0 60px rgba(0, 213, 255, 0.4), inset 0 0 20px rgba(0,0,0,0.8); }
         }
         #message-box { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background-color: #ff4d4d; color: white; padding: 10px 20px; border-radius: 5px; z-index: 1000; display: none; font-size: 0.8rem; box-shadow: 0 0 10px #ff4d4d; }
+        
+        /* --- Running Goober Animation --- */
+        #running-goober {
+            width: 30px;
+            height: 30px;
+            animation: run-animation 0.5s linear infinite;
+        }
+        @keyframes run-animation {
+            0% { transform: translateX(-50%) translateY(0px); }
+            50% { transform: translateX(-50%) translateY(-3px); }
+            100% { transform: translateX(-50%) translateY(0px); }
+        }
     </style>
 </head>
 <body class="font-pixel text-white flex items-center justify-center min-h-screen p-4">
@@ -115,7 +127,7 @@
     <div id="message-box"></div>
 
     <!-- Main Monitor Container -->
-    <div class="monitor-frame w-full max-w-4xl h-[90vh]">
+    <div id="monitor" class="monitor-frame w-full max-w-4xl h-[90vh]">
         <div class="h-full">
             <!-- Whitelist Page -->
             <div class="w-full h-full bg-black/50 rounded-lg overflow-hidden flex flex-col">
@@ -139,26 +151,46 @@
                 <!-- Page Content -->
                 <div id="page-content" class="flex-grow p-6 md:p-8 overflow-y-auto flex items-center justify-center">
                     
-                    <!-- Main Submission Form -->
-                    <div class="text-center space-y-8 w-full">
-                        <h1 class="text-2xl md:text-3xl font-bold glow-white uppercase leading-tight">Secure Your<br>Pixel Goobers<br>Whitelist</h1>
+                    <!-- Gate View (Initially Visible) -->
+                    <div id="gate-view" class="text-center w-full space-y-8">
                         
-                        <!-- Project Info Section -->
-                        <div class="flex justify-center space-x-4 md:space-x-8 text-center text-sm">
-                            <div class="border-2 border-purple-600 p-3 flex-1">
-                                <p class="text-gray-400 text-xs mb-2">SUPPLY</p>
-                                <p class="glow-white text-lg">3,333</p>
+                        <!-- Progress Bar -->
+                        <div class="w-full max-w-sm mx-auto mb-12">
+                            <div class="relative h-4 bg-gray-800 border-2 border-purple-500">
+                                <div class="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-green-500" style="width: 75%;"></div>
+                                <div id="running-goober" class="absolute -top-6" style="left: 75%;">
+                                    <svg viewBox="0 0 30 30">
+                                      <g>
+                                        <rect x="5" y="10" width="20" height="15" rx="7" fill="#39ff14"></rect>
+                                        <rect x="8" y="7" width="14" height="18" rx="7" fill="#39ff14"></rect>
+                                        <circle cx="11" cy="15" r="2" fill="#fff"></circle>
+                                        <circle cx="19" cy="15" r="2" fill="#fff"></circle>
+                                      </g>
+                                    </svg>
+                                </div>
                             </div>
-                            <div class="border-2 border-purple-600 p-3 flex-1">
-                                <p class="text-gray-400 text-xs mb-2">MINT</p>
-                                <p class="glow-white text-lg">FREE</p>
-                            </div>
-                            <div class="border-2 border-purple-600 p-3 flex-1">
-                                <p class="text-gray-400 text-xs mb-2">LAUNCH</p>
-                                <p class="glow-white text-lg">SOON</p>
-                            </div>
+                            <p class="text-xs text-center mt-2 text-gray-400">75% COMPLETE</p>
                         </div>
+                        
+                        <h2 class="text-xl md:text-2xl font-bold glow-white uppercase leading-loose">
+                            Oops, you are late, goobers.<br><br>Public whitelist now closed.
+                        </h2>
 
+                        <div class="mt-12">
+                            <p class="mb-4 text-gray-300">Enter access code if you have one</p>
+                            <input type="text" id="access-code-input" class="pixel-input max-w-xs mx-auto text-center uppercase" placeholder="-----">
+                            <button id="verify-btn" class="btn glow-blue mt-6 py-2 px-6 text-sm">Verify</button>
+                        </div>
+                        
+                        <p class="text-xs text-gray-500 pt-8">
+                            Dm to <a href="https://x.com/PixelGoobers" target="_blank" class="text-blue-400 underline">Pixel Goobers</a> twitter for Collab
+                        </p>
+                    </div>
+
+                    <!-- Main Submission Form (Initially Hidden) -->
+                    <div id="submission-view" class="text-center space-y-8 w-full hidden">
+                        <h1 class="text-2xl md:text-3xl font-bold glow-white uppercase leading-tight">Secure Your<br>Private<br>Whitelist</h1>
+                        
                         <form id="whitelist-form" class="max-w-md mx-auto space-y-6 text-sm">
                             <p class="block text-left mb-2 text-gray-300">1. Follow Pixel Goobers <a href="https://x.com/PixelGoobers" target="_blank" class="text-blue-300 underline hover:text-blue-400">on X</a></p>
                             
@@ -234,6 +266,31 @@
         }
         document.body.addEventListener('click', initializeAudio);
         document.body.addEventListener('keydown', initializeAudio);
+
+        // --- Gate Logic ---
+        const gateView = document.getElementById('gate-view');
+        const submissionView = document.getElementById('submission-view');
+        const accessCodeInput = document.getElementById('access-code-input');
+        const verifyBtn = document.getElementById('verify-btn');
+        const correctCode = "PIXEL";
+
+        verifyBtn.addEventListener('click', () => {
+            if (accessCodeInput.value.trim().toUpperCase() === correctCode) {
+                playSuccessSound();
+                gateView.style.display = 'none';
+                submissionView.style.display = 'block';
+            } else {
+                playInvalidSound();
+                showMessage("Invalid Access Code");
+                accessCodeInput.value = '';
+            }
+        });
+         accessCodeInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                verifyBtn.click();
+            }
+        });
+
 
         // --- UI Elements ---
         const whitelistForm = document.getElementById('whitelist-form');
@@ -349,3 +406,4 @@
     </script>
 </body>
 </html>
+

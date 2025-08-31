@@ -3,406 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pixel Goobers - Whitelist Submission</title>
+    <title>Pixel Goobers NFT</title>
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/phyllic/GoobersPNG/main/goober.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <!-- Add Tone.js for sound effects -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <style>
-        body { font-family: 'Press Start 2P', cursive; background-color: #0a0a1a; overflow-x: hidden; }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background-color: #0d0d21;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
         .font-pixel { font-family: 'Press Start 2P', cursive; }
-        
-        /* --- Enhanced Glow & Gradient Effects --- */
-        .glow-white { 
-            background: linear-gradient(90deg, #00aaff, #fff, #00ff7f, #fff, #00aaff);
-            background-size: 200% auto;
-            color: transparent;
-            -webkit-background-clip: text;
-            background-clip: text;
-            animation: shimmer-text 5s linear infinite;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(0, 170, 255, 0.5);
-        }
-        @keyframes shimmer-text {
-            to { background-position: 200% center; }
-        }
 
-        .btn {
-            position: relative;
+        /* --- BACKGROUND --- */
+        #main-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(180deg, #0d0d21 0%, #1a1a3a 100%);
             overflow: hidden;
-            border: 2px solid;
-            transition: all 0.3s ease;
         }
-        .btn::before {
-            content: '';
+        .parallax-layer {
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(transparent, rgba(255,255,255,0.3), transparent 30%);
-            animation: rotate 4s linear infinite;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            will-change: transform;
         }
-        .btn:hover::before {
-            animation-play-state: paused;
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 4s infinite ease-in-out;
+            will-change: transform, opacity;
         }
-        @keyframes rotate {
-            to { transform: rotate(360deg); }
+        .asteroid {
+            position: absolute;
+            background-color: #555;
+            border-radius: 30%;
+            animation: float 20s infinite linear;
         }
-
-        .glow-blue { 
-            background: linear-gradient(45deg, #0055ff, #00aaff);
-            border-color: #00aaff;
-            box-shadow: 0 0 10px #00aaff, inset 0 0 5px rgba(0,0,0,0.5);
+        @keyframes float {
+             0% { transform: translateX(0) rotate(0deg); }
+             100% { transform: translateX(100vw) rotate(360deg); }
         }
-        .glow-blue:hover {
-            box-shadow: 0 0 20px #00d5ff, 0 0 30px #00d5ff, inset 0 0 5px rgba(0,0,0,0.5);
-        }
-
-        .glow-green {
-            background: linear-gradient(45deg, #00ff7f, #39ff14);
-            border-color: #00ff7f;
-            box-shadow: 0 0 10px #00ff7f, inset 0 0 5px rgba(0,0,0,0.5);
-        }
-        .glow-green:hover {
-             box-shadow: 0 0 20px #0aff99, 0 0 30px #0aff99, inset 0 0 5px rgba(0,0,0,0.5);
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1); }
         }
 
-        .pixel-input { background-color: rgba(10, 10, 26, 0.7); border: 2px solid #4a00e0; color: white; padding: 10px; width: 100%; outline: none; transition: all 0.3s ease; }
-        .pixel-input:focus { 
-            border-color: #00aaff; 
-            box-shadow: 0 0 10px #00aaff;
-            animation: flicker-border 1.5s infinite;
+        /* --- UI ELEMENTS --- */
+        .pixel-border {
+            border: 4px solid #000;
+            box-shadow: 
+                inset 0 0 0 4px #4a00e0,
+                0 0 0 4px #4a00e0;
+            background-color: rgba(10, 10, 26, 0.8);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
-        @keyframes flicker-border {
-            0%, 100% { box-shadow: 0 0 10px #00aaff; }
-            50% { box-shadow: 0 0 15px #00d5ff, 0 0 5px #00aaff; }
+        .info-box {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .info-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                inset 0 0 0 4px #8a2be2,
+                0 0 0 4px #8a2be2,
+                0 0 20px #ff00ff;
+        }
+        .mint-button {
+             background: linear-gradient(45deg, #ff00ff, #8a2be2);
+             transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .mint-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 25px #ff00ff;
         }
 
-        .pixel-input::placeholder { color: #aaa; font-family: 'Press Start 2P', cursive; }
-        #cosmic-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: #00000c; background: linear-gradient(135deg, #00000c 0%, #1a0033 50%, #0d001a 100%); }
-        .star { position: absolute; background-color: white; border-radius: 50%; animation: twinkle-color 4s infinite ease-in-out; }
-        @keyframes twinkle-color { 
-            0%, 100% { opacity: 0.5; transform: scale(0.8); background-color: #fff; } 
-            50% { opacity: 1; transform: scale(1.2); background-color: #00ffff; } 
+        .text-glow-neon {
+            text-shadow: 0 0 5px #fff, 0 0 10px #ff00ff, 0 0 15px #ff00ff;
         }
-        .goober { position: absolute; width: 40px; height: 40px; animation: float-bounce 10s infinite ease-in-out; }
-        @keyframes float-bounce { 
-            0%, 100% { transform: translateY(0px) rotate(0deg); } 
-            25% { transform: translateY(-25px) rotate(10deg) scale(1.1); }
-            50% { transform: translateY(0px) rotate(0deg); }
-            75% { transform: translateY(-15px) rotate(-10deg); }
-        }
-        .monitor-frame { 
-            border: 20px solid #222; 
-            border-radius: 20px; 
-            box-shadow: 0 0 50px rgba(0, 170, 255, 0.3), inset 0 0 15px rgba(0,0,0,0.7); 
-            background: #111; padding: 10px; 
-            animation: monitor-glow 5s infinite ease-in-out;
-        }
-        @keyframes monitor-glow {
-            0%, 100% { box-shadow: 0 0 50px rgba(0, 170, 255, 0.3), inset 0 0 15px rgba(0,0,0,0.7); }
-            50% { box-shadow: 0 0 60px rgba(0, 213, 255, 0.4), inset 0 0 20px rgba(0,0,0,0.8); }
-        }
-        #message-box { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background-color: #ff4d4d; color: white; padding: 10px 20px; border-radius: 5px; z-index: 1000; display: none; font-size: 0.8rem; box-shadow: 0 0 10px #ff4d4d; }
         
-        /* --- Running Goober Animation --- */
-        #running-goober {
-            width: 30px;
-            height: 30px;
-            animation: run-animation 0.5s linear infinite;
+        /* --- SCROLL ANIMATIONS --- */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            will-change: opacity, transform;
         }
-        @keyframes run-animation {
-            0% { transform: translateX(-50%) translateY(0px); }
-            50% { transform: translateX(-50%) translateY(-3px); }
-            100% { transform: translateX(-50%) translateY(0px); }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
-<body class="font-pixel text-white flex items-center justify-center min-h-screen p-4">
+<body class="p-4 sm:p-8">
 
-    <div id="cosmic-background"></div>
-    <div id="message-box"></div>
+    <div id="main-background">
+        <div id="parallax-far" class="parallax-layer"></div>
+        <div id="parallax-mid" class="parallax-layer"></div>
+        <div id="parallax-near" class="parallax-layer"></div>
+    </div>
 
-    <!-- Main Monitor Container -->
-    <div id="monitor" class="monitor-frame w-full max-w-4xl h-[90vh]">
-        <div class="h-full">
-            <!-- Whitelist Page -->
-            <div class="w-full h-full bg-black/50 rounded-lg overflow-hidden flex flex-col">
-                <!-- Browser Chrome -->
-                <div class="bg-gray-800/80 p-2 flex items-center text-xs">
-                    <div class="flex space-x-1.5 mr-4">
-                        <div class="w-3 h-3 bg-red-500 rounded-full"></div>
-                        <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-                    </div>
-                    <div class="bg-gray-700/80 rounded-md px-3 py-1 flex-grow flex items-center">
-                        <span class="text-gray-400">pixelgoobers.com</span>
-                    </div>
-                </div>
-                <div class="bg-gray-900/80 px-4 py-1 text-xs border-b border-gray-700">
-                    <div class="bg-gray-700/80 inline-block px-4 py-1 rounded-t-md">
-                        Pixel Goobers
-                    </div>
+    <div class="container mx-auto max-w-5xl">
+
+        <!-- ========= HERO SECTION ========= -->
+        <header class="h-screen flex flex-col items-center justify-center text-center">
+            <div class="fade-in-section">
+                
+                 <div class="pixel-border max-w-2xl mx-auto p-6 md:p-8 mb-12">
+                    <h2 class="text-2xl sm:text-3xl font-pixel text-glow-neon mb-4">Oops, you are late, goobers.</h2>
+                    <p class="text-gray-300 mb-6">Public whitelist now closed.</p>
+                    <p class="text-sm">
+                        Dm to <a href="https://x.com/PixelGoobers" target="_blank" class="text-blue-400 underline">Pixel Goobers</a> for Collab
+                    </p>
                 </div>
 
-                <!-- Page Content -->
-                <div id="page-content" class="flex-grow p-6 md:p-8 overflow-y-auto flex items-center justify-center">
-                    
-                    <!-- Gate View (Initially Visible) -->
-                    <div id="gate-view" class="text-center w-full space-y-8">
-                        
-                        <!-- Progress Bar -->
-                        <div class="w-full max-w-sm mx-auto mb-12">
-                            <div class="relative h-4 bg-gray-800 border-2 border-purple-500">
-                                <div class="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-green-500" style="width: 75%;"></div>
-                                <div id="running-goober" class="absolute -top-6" style="left: 75%;">
-                                    <svg viewBox="0 0 30 30">
-                                      <g>
-                                        <rect x="5" y="10" width="20" height="15" rx="7" fill="#39ff14"></rect>
-                                        <rect x="8" y="7" width="14" height="18" rx="7" fill="#39ff14"></rect>
-                                        <circle cx="11" cy="15" r="2" fill="#fff"></circle>
-                                        <circle cx="19" cy="15" r="2" fill="#fff"></circle>
-                                      </g>
-                                    </svg>
-                                </div>
-                            </div>
-                            <p class="text-xs text-center mt-2 text-gray-400">75% COMPLETE</p>
-                        </div>
-                        
-                        <h2 class="text-xl md:text-2xl font-bold glow-white uppercase leading-loose">
-                            Oops, you are late, goobers.<br><br>Public whitelist now closed.
-                        </h2>
-
-                        <div class="mt-12">
-                            <p class="mb-4 text-gray-300">Enter access code if you have one</p>
-                            <input type="text" id="access-code-input" class="pixel-input max-w-xs mx-auto text-center uppercase" placeholder="-----">
-                            <button id="verify-btn" class="btn glow-blue mt-6 py-2 px-6 text-sm">Verify</button>
-                        </div>
-                        
-                        <p class="text-xs text-gray-500 pt-8">
-                            Dm to <a href="https://x.com/PixelGoobers" target="_blank" class="text-blue-400 underline">Pixel Goobers</a> twitter for Collab
-                        </p>
+                <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto text-sm">
+                    <div class="pixel-border info-box p-4">
+                        <p class="text-xs text-gray-400 mb-1">SUPPLY</p>
+                        <p>3,333</p>
                     </div>
-
-                    <!-- Main Submission Form (Initially Hidden) -->
-                    <div id="submission-view" class="text-center space-y-8 w-full hidden">
-                        <h1 class="text-2xl md:text-3xl font-bold glow-white uppercase leading-tight">Secure Your<br>Private<br>Whitelist</h1>
-                        
-                        <form id="whitelist-form" class="max-w-md mx-auto space-y-6 text-sm">
-                            <p class="block text-left mb-2 text-gray-300">1. Follow Pixel Goobers <a href="https://x.com/PixelGoobers" target="_blank" class="text-blue-300 underline hover:text-blue-400">on X</a></p>
-                            
-                            <div class="relative">
-                                <label for="x-handle" class="block text-left mb-2 text-gray-300">2. Enter your X handle</label>
-                                <div class="flex items-center">
-                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M9.294 6.928L14.357 1h-1.2L8.762 6.147 5.25 1H1.2l5.31 7.643L1.143 15h1.2l4.744-5.428L11.25 15h4.05l-5.996-8.072zM7.653 8.9l-.9-1.286L2.65 2.12h2.1l3.34 4.766.9 1.285 4.42 6.322h-2.1L7.652 8.9z"></path></svg>
-                                    </span>
-                                    <input type="text" id="x-handle" name="xHandle" class="pixel-input pl-10" placeholder="@yourusername">
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block text-left mb-2 text-gray-300">3. like , retweet , Mention 2 Friend and Reply with Evm Address</label>
-                                <a href="https://x.com/PixelGoobers/status/1956311042453127459" target="_blank" class="btn glow-blue block w-full text-center py-3 px-4">
-                                    Tweet
-                                </a>
-                            </div>
-
-                            <div class="relative">
-                                <label for="tweet-link" class="block text-left mb-2 text-gray-300">4. Submit your reply link</label>
-                                <div class="flex items-center">
-                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" /></svg>
-                                    </span>
-                                    <input type="text" id="tweet-link" name="tweetLink" class="pixel-input pl-10" placeholder="https://x.com/yourtweet">
-                                </div>
-                            </div>
-                            
-                            <div class="relative">
-                                <label for="evm-address" class="block text-left mb-2 text-gray-300">5. Enter Your EVM address (0x..)</label>
-                                <div class="flex items-center">
-                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400">
-                                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="currentColor"><path d="M311.9 260.8L160 353.6 8 260.8 160 0l151.9 260.8zM160 383.4L8 290.6 160 512l152-221.4-152 92.8z"/></svg>
-                                    </span>
-                                    <input type="text" id="evm-address" name="evmAddress" class="pixel-input pl-10" placeholder="0x...">
-                                </div>
-                            </div>
-
-                            <button id="submit-btn" type="submit" class="btn glow-green w-full py-4 mt-4">
-                                Submit EVM Address
-                            </button>
-                        </form>
+                    <div class="pixel-border info-box p-4">
+                        <p class="text-xs text-gray-400 mb-1">MINT</p>
+                        <p>FREE</p>
+                    </div>
+                    <div class="pixel-border info-box p-4">
+                        <p class="text-xs text-gray-400 mb-1">CHAIN</p>
+                        <p>ETH</p>
+                    </div>
+                    <div class="pixel-border info-box p-4">
+                        <p class="text-xs text-gray-400 mb-1">LAUNCH</p>
+                        <p>September</p>
                     </div>
                 </div>
+
             </div>
-        </div>
+        </header>
+
     </div>
 
     <script>
-        // --- Sound Synthesis Setup ---
-        let soundsReady = false;
+        // --- Background & Scroll Animations ---
+        const parallaxFar = document.getElementById('parallax-far');
+        const parallaxMid = document.getElementById('parallax-mid');
+        const parallaxNear = document.getElementById('parallax-near');
 
-        const successSynth = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' } }).toDestination();
-        const errorSynth = new Tone.Synth({ oscillator: { type: 'sawtooth' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.1 } }).toDestination();
-        const typingSynth = new Tone.MembraneSynth({ pitchDecay: 0.008, octaves: 2, envelope: { attack: 0.001, decay: 0.2, sustain: 0.01, release: 0.1 } }).toDestination();
-        const invalidSynth = new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.1 } }).toDestination();
-        
-        function playSuccessSound() { if (soundsReady) successSynth.triggerAttackRelease(['C4', 'E4', 'G4', 'C5'], '8n', Tone.now()); }
-        function playErrorSound() { if (soundsReady) errorSynth.triggerAttackRelease('C3', '4n'); }
-        function playTypingSound() { if (soundsReady) typingSynth.triggerAttackRelease("C2", "8n"); }
-        function playInvalidSound() { if (soundsReady) invalidSynth.triggerAttackRelease("G2", "8n"); }
-        
-        function initializeAudio() {
-            if (!soundsReady) {
-                Tone.start();
-                soundsReady = true;
-                console.log('Audio context started.');
-                document.body.removeEventListener('click', initializeAudio);
-                document.body.removeEventListener('keydown', initializeAudio);
-            }
+        // Create distant stars (small and numerous)
+        for (let i = 0; i < 80; i++) {
+            createStar(parallaxFar, 0.5, 1.5);
         }
-        document.body.addEventListener('click', initializeAudio);
-        document.body.addEventListener('keydown', initializeAudio);
-
-        // --- Gate Logic ---
-        const gateView = document.getElementById('gate-view');
-        const submissionView = document.getElementById('submission-view');
-        const accessCodeInput = document.getElementById('access-code-input');
-        const verifyBtn = document.getElementById('verify-btn');
-        const correctCode = "PIXEL";
-
-        verifyBtn.addEventListener('click', () => {
-            if (accessCodeInput.value.trim().toUpperCase() === correctCode) {
-                playSuccessSound();
-                gateView.style.display = 'none';
-                submissionView.style.display = 'block';
-            } else {
-                playInvalidSound();
-                showMessage("Invalid Access Code");
-                accessCodeInput.value = '';
-            }
-        });
-         accessCodeInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                verifyBtn.click();
-            }
-        });
-
-
-        // --- UI Elements ---
-        const whitelistForm = document.getElementById('whitelist-form');
-        const inputFields = document.querySelectorAll('.pixel-input');
-
-        // --- Main Form Logic ---
-        inputFields.forEach(el => {
-            el.addEventListener('keydown', playTypingSound);
-        });
-
-        function showMessage(message, isError = true) {
-            const messageBox = document.getElementById('message-box');
-            messageBox.textContent = message;
-            messageBox.style.backgroundColor = isError ? '#ff4d4d' : '#00ff7f';
-            messageBox.style.display = 'block';
-            setTimeout(() => {
-                messageBox.style.display = 'none';
-            }, 3000);
+        // Create mid-ground stars
+        for (let i = 0; i < 40; i++) {
+            createStar(parallaxMid, 1, 2);
+        }
+        // Create near stars (large and fewer)
+        for (let i = 0; i < 15; i++) {
+            createStar(parallaxNear, 1.5, 2.5);
+        }
+        // Create some asteroids
+        for (let i = 0; i < 5; i++) {
+             const asteroid = document.createElement('div');
+             asteroid.className = 'asteroid';
+             const size = Math.random() * 20 + 10;
+             asteroid.style.width = `${size}px`;
+             asteroid.style.height = `${size}px`;
+             asteroid.style.top = `${Math.random() * 100}%`;
+             asteroid.style.left = `-${size}px`; // Start off-screen
+             asteroid.style.animationDuration = `${Math.random() * 20 + 20}s`;
+             asteroid.style.animationDelay = `${Math.random() * 20}s`;
+             parallaxMid.appendChild(asteroid);
         }
 
-        whitelistForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbzdG8EDNm8mXGbcNSu0Nnbyy2HdZef0sFpmn8CMLSwhur3z76CA2kKNb9CbIDEeDS03/exec';
-            const xHandle = document.getElementById('x-handle').value.trim();
-            const tweetLink = document.getElementById('tweet-link').value.trim();
-            const evmAddress = document.getElementById('evm-address').value.trim();
-
-            if (!xHandle || !tweetLink || !evmAddress) {
-                playInvalidSound();
-                showMessage("Please fill out all fields.");
-                return;
-            }
-            if (!xHandle.startsWith('@')) {
-                playInvalidSound();
-                showMessage("X handle must start with @.");
-                return;
-            }
-            if (!tweetLink.startsWith('https://x.com')) {
-                playInvalidSound();
-                showMessage("Submit your reply link");
-                return;
-            }
-            if (!evmAddress.startsWith('0x')) {
-                playInvalidSound();
-                showMessage("EVM address must start with 0x.");
-                return;
-            }
-
-            const submitBtn = document.getElementById('submit-btn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
-
-            fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new FormData(whitelistForm)})
-                .then(() => {
-                    playSuccessSound();
-                    const pageContent = document.getElementById('page-content');
-                    pageContent.innerHTML = `
-                        <div class="text-center flex items-center justify-center h-full">
-                            <h2 class="text-xl md:text-2xl font-bold glow-white uppercase leading-loose animate-pulse">
-                                Submission Received!<br><br>Wait for the<br>Whitelist Checker
-                            </h2>
-                        </div>
-                    `;
-                })
-                .catch(error => {
-                    playErrorSound();
-                    console.error('Error!', error.message);
-                    showMessage("Submission failed. A network error occurred.");
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Submit EVM Address';
-                });
-        });
-
-        // --- Background Animation Setup ---
-        const background = document.getElementById('cosmic-background');
-        const numStars = 150;
-        const numGoobers = 15;
-
-        for (let i = 0; i < numStars; i++) {
+        function createStar(layer, minSize, maxSize) {
             const star = document.createElement('div');
             star.className = 'star';
-            const size = Math.random() * 2 + 1;
+            const size = Math.random() * (maxSize - minSize) + minSize;
             star.style.width = `${size}px`;
             star.style.height = `${size}px`;
             star.style.top = `${Math.random() * 100}%`;
             star.style.left = `${Math.random() * 100}%`;
             star.style.animationDelay = `${Math.random() * 4}s`;
-            star.style.animationDuration = `${Math.random() * 2 + 2}s`;
-            background.appendChild(star);
+            layer.appendChild(star);
         }
+        
+        // Parallax scroll effect
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            parallaxFar.style.transform = `translateY(${scrollY * 0.1}px)`;
+            parallaxMid.style.transform = `translateY(${scrollY * 0.3}px)`;
+            parallaxNear.style.transform = `translateY(${scrollY * 0.5}px)`;
+        });
 
-        const gooberDesigns = [
-            { color: '#ff1493', eyes: '#fff', accessory: 'none' }, { color: '#00ffff', eyes: '#000', accessory: 'hat' }, { color: '#39ff14', eyes: '#fff', accessory: 'glasses' }, { color: '#f9a03f', eyes: '#000', accessory: 'none' }, { color: '#8A2BE2', eyes: '#fff', accessory: 'hat' }
-        ];
 
-        function createGooberSVG(design) {
-            const hat = design.accessory === 'hat' ? `<path d="M10 10 L30 10 L20 2 Z" fill="#7a4a3a" />` : '';
-            const glasses = design.accessory === 'glasses' ? `<rect x="8" y="15" width="24" height="6" fill="#000" /><rect x="6" y="15" width="2" height="2" fill="#000" /><rect x="32" y="15" width="2" height="2" fill="#000" />` : '';
-            return `<svg class="goober" viewBox="0 0 40 40" style="top:${Math.random() * 90}%; left:${Math.random() * 90}%; animation-delay: ${Math.random() * 10}s; animation-duration: ${Math.random() * 5 + 8}s;">
-                        <g>
-                            <rect x="5" y="15" width="30" height="20" rx="10" fill="${design.color}" />
-                            <rect x="10" y="10" width="20" height="25" rx="10" fill="${design.color}" />
-                            <circle cx="15" cy="22" r="4" fill="${design.eyes}" />
-                            <circle cx="25" cy="22" r="4" fill="${design.eyes}" />
-                            ${hat} ${glasses}
-                        </g></svg>`;
-        }
+        const faders = document.querySelectorAll('.fade-in-section');
+        const appearOptions = {
+            threshold: 0.2,
+            rootMargin: "0px 0px -50px 0px"
+        };
+        const appearOnScroll = new IntersectionObserver(function(entries, appearOnScroll) {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) {
+                    return;
+                } else {
+                    entry.target.classList.add('is-visible');
+                    appearOnScroll.unobserve(entry.target);
+                }
+            });
+        }, appearOptions);
 
-        for (let i = 0; i < numGoobers; i++) {
-            const design = gooberDesigns[i % gooberDesigns.length];
-            background.innerHTML += createGooberSVG(design);
-        }
+        faders.forEach(fader => {
+            appearOnScroll.observe(fader);
+        });
     </script>
 </body>
 </html>

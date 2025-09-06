@@ -25,8 +25,8 @@
         .font-pixel {
             font-family: 'Press Start 2P', cursive;
         }
-        
-        /* Background with stars */
+
+        /* --- Background --- */
         #main-background {
             position: fixed;
             top: 0;
@@ -49,7 +49,7 @@
             50% { opacity: 0.8; transform: scale(1); }
         }
         
-        /* UI Elements */
+        /* --- UI Elements --- */
         .pixel-border {
             border: 4px solid #1a1a3a;
             box-shadow: 
@@ -71,21 +71,16 @@
             width: 100%;
             padding: 2rem 0;
             position: relative;
+            cursor: grab;
+        }
+        .marquee-container.grabbing {
+            cursor: grabbing;
         }
         
         .marquee-track {
             display: flex;
             will-change: transform;
-            animation: marquee 10s linear infinite; /* Faster speed */
-        }
-        
-        .marquee-container:hover .marquee-track {
-            animation-play-state: paused;
-        }
-        
-        @keyframes marquee {
-            from { transform: translateX(0); }
-            to { transform: translateX(-50%); }
+            /* Animation is now handled by JavaScript */
         }
         
         .gallery-item {
@@ -93,6 +88,11 @@
             width: 300px;
             margin: 0 1rem;
             transition: transform 0.3s ease;
+            cursor: pointer;
+            user-select: none; /* Prevents image dragging */
+        }
+        .gallery-item img {
+            pointer-events: none; /* Prevents image dragging */
         }
         
         .gallery-item:hover {
@@ -136,6 +136,47 @@
             padding: 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             border: 2px solid #4a00e0;
+        }
+
+        /* --- Collector's View Modal --- */
+        #modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        #modal-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+        }
+        @media (min-width: 768px) {
+            #modal-content {
+                flex-direction: row;
+            }
+        }
+        #modal-image {
+            max-width: 80vw;
+            max-height: 50vh;
+            border: 4px solid #8a2be2;
+        }
+        @media (min-width: 768px) {
+            #modal-image {
+                 max-width: 40vw;
+                 max-height: 70vh;
+            }
+        }
+        #modal-traits {
+            width: 280px;
         }
         
         /* Responsive adjustments */
@@ -191,7 +232,7 @@
     <section id="collection" class="py-16">
         <div class="w-full">
             <h2 class="text-3xl font-bold text-center text-glow-neon mb-12">COLLECTION GALLERY</h2>
-            <div class="marquee-container">
+            <div class="marquee-container" id="marquee-container">
                 <div class="marquee-track" id="gallery-marquee">
                     <!-- Gallery items will be populated by JavaScript -->
                 </div>
@@ -235,56 +276,58 @@
             <p class="text-xs text-gray-500">&copy; 2025 Pixel Goobers. All rights reserved.</p>
         </div>
     </footer>
+
+    <!-- Collector's View Modal -->
+    <div id="modal-overlay">
+        <div id="modal-content" class="pixel-border">
+            <img id="modal-image" src="" alt="Selected Goober">
+            <div id="modal-traits" class="text-sm">
+                 <!-- Traits will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
     
     <script>
-        // Populate gallery with images
+        // --- DATA ---
         const gooberImages = [
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/G0AmBRjbkAE5R2K.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/G0FvvFIboAAVvsc.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gz-uuMpa0AATTt0.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gz0YqNkaoAEOtmS.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gz1iMruaIAAX_IK.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gz2KjSoXcAEHjn0.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzxX3xQbMAAfkjY.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gzwmd1vb0AA4wM5.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gzvom0RaAAEKFxK.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzsnBP6aAAAj7MB.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gzsmd80bgAARw0D.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzshWzFaEAAoI2e.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GznYqQEaQAEdQvj.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzX1xK6a4AQTDDm.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gz6NfXEbwAA_UL8.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gz5jkG0bkAAnOtY.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gzk6n8KaIAAc8sG.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzWDS7nbQAAD1xI.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GziILRUaUAALnxP.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzR629JawAAD4ap.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzNjkuPa0AA0sR7.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gzf6i6ZbkAInLIR.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzdP3TvbkAMqYRU.jfif",
-            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzauROhbwAAgHNE.jfif"
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/G0AmBRjbkAE5R2K.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/G0FvvFIboAAVvsc.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gz-uuMpa0AATTt0.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gz0YqNkaoAEOtmS.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gz1iMruaIAAX_IK.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gz2KjSoXcAEHjn0.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzxX3xQbMAAfkjY.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gzwmd1vb0AA4wM5.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gzvom0RaAAEKFxK.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzsnBP6aAAAj7MB.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gzsmd80bgAARw0D.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzshWzFaEAAoI2e.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GznYqQEaQAEdQvj.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzX1xK6a4AQTDDm.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gz6NfXEbwAA_UL8.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gz5jkG0bkAAnOtY.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gzk6n8KaIAAc8sG.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzWDS7nbQAAD1xI.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GziILRUaUAALnxP.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzR629JawAAD4ap.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzNjkuPa0AA0sR7.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gzf6i6ZbkAInLIR.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzdP3TvbkAMqYRU.jfif", "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzauROhbwAAgHNE.jfif"
         ];
         
+        // --- ELEMENTS ---
         const track = document.getElementById('gallery-marquee');
-        
+        const background = document.getElementById('main-background');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalImage = document.getElementById('modal-image');
+        const modalTraits = document.getElementById('modal-traits');
+
+        // --- FUNCTIONS ---
         function populateGallery(images) {
             let imageContent = '';
             images.forEach((url, index) => {
                 const gooberNumber = (index + 1).toString().padStart(4, '0');
                 imageContent += `
-                    <div class="gallery-item">
+                    <div class="gallery-item" data-index="${index}">
                         <img src="${url}" alt="Goober #${gooberNumber}" class="w-full h-auto mb-2 rounded-lg shadow-lg">
                         <p class="text-xs text-center mt-2">Goobers #${gooberNumber}</p>
                     </div>
                 `;
             });
-            track.innerHTML = imageContent + imageContent; // Duplicate for seamless loop
+            track.innerHTML = imageContent + imageContent;
         }
-        
+
+        function showModal(index) {
+            const gooberNumber = (parseInt(index) + 1).toString().padStart(4, '0');
+            modalImage.src = gooberImages[index];
+            modalImage.alt = `Goober #${gooberNumber}`;
+            
+            let traitsHTML = `<h3 class="text-lg text-glow-neon mb-4">Goober #${gooberNumber}</h3>`;
+            modalTraits.innerHTML = traitsHTML;
+            
+            modalOverlay.style.display = 'flex';
+        }
+
+        // --- INITIALIZATION ---
         populateGallery(gooberImages);
-        
-        // Create background stars
-        const background = document.getElementById('main-background');
         
         for (let i = 0; i < 100; i++) {
             const star = document.createElement('div');
@@ -298,7 +341,21 @@
             background.appendChild(star);
         }
         
-        // Fade in sections on scroll
+        // --- EVENT LISTENERS ---
+        track.addEventListener('click', (e) => {
+            if (isDragging) return;
+            const item = e.target.closest('.gallery-item');
+            if (item) {
+                showModal(item.dataset.index);
+            }
+        });
+
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                modalOverlay.style.display = 'none';
+            }
+        });
+        
         const faders = document.querySelectorAll('.fade-in-section');
         const appearOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
         const appearOnScroll = new IntersectionObserver(function(entries, observer) {
@@ -314,7 +371,6 @@
             appearOnScroll.observe(fader);
         });
         
-        // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -324,6 +380,69 @@
                 }
             });
         });
+
+        // --- Marquee Drag Logic ---
+        const marqueeContainer = document.getElementById('marquee-container');
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+        let isDragging = false;
+        let animationFrame;
+
+        let position = 0;
+        const speed = 0.5;
+
+        function scrollMarquee() {
+            if (!isDown) {
+                position -= speed;
+                const halfWidth = track.scrollWidth / 2;
+                if (position <= -halfWidth) {
+                    position += halfWidth;
+                }
+                track.style.transform = `translateX(${position}px)`;
+            }
+            animationFrame = requestAnimationFrame(scrollMarquee);
+        }
+
+        function startDrag(e) {
+            isDown = true;
+            isDragging = false;
+            marqueeContainer.classList.add('grabbing');
+            startX = (e.pageX || e.touches[0].pageX) - marqueeContainer.offsetLeft;
+            scrollLeft = position;
+            cancelAnimationFrame(animationFrame);
+        }
+
+        function endDrag() {
+            isDown = false;
+            marqueeContainer.classList.remove('grabbing');
+            requestAnimationFrame(scrollMarquee);
+            setTimeout(() => isDragging = false, 50); // Prevent click after drag
+        }
+
+        function moveDrag(e) {
+            if (!isDown) return;
+            e.preventDefault();
+            isDragging = true;
+            const x = (e.pageX || e.touches[0].pageX) - marqueeContainer.offsetLeft;
+            const walk = (x - startX) * 2; // Multiply for faster scrolling
+            position = scrollLeft + walk;
+            track.style.transform = `translateX(${position}px)`;
+        }
+        
+        marqueeContainer.addEventListener('mousedown', startDrag);
+        marqueeContainer.addEventListener('touchstart', startDrag);
+        
+        marqueeContainer.addEventListener('mouseleave', endDrag);
+        marqueeContainer.addEventListener('mouseup', endDrag);
+        marqueeContainer.addEventListener('touchend', endDrag);
+
+        marqueeContainer.addEventListener('mousemove', moveDrag);
+        marqueeContainer.addEventListener('touchmove', moveDrag);
+        
+        // Start the animation
+        scrollMarquee();
+
     </script>
 </body>
 </html>

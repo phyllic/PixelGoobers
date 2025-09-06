@@ -3,25 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pixel Goobers NFT</title>
+    <title>Pixel Goobers - NFT Collection</title>
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/phyllic/PixelGoobers/main/WW8aNfos_400x400.jpg">
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         html {
             scroll-behavior: smooth;
         }
         body {
             font-family: 'Press Start 2P', cursive;
-            background-color: #0d0d21;
-            color: #ffffff;
+            background-color: #0d0d21; /* Dark theme background */
+            color: #ffffff; /* Light text */
             overflow-x: hidden;
+            margin: 0;
+            padding: 0;
         }
-        .font-pixel { font-family: 'Press Start 2P', cursive; }
-
-        /* --- BACKGROUND --- */
+        
+        .font-pixel {
+            font-family: 'Press Start 2P', cursive;
+        }
+        
+        /* Background with stars */
         #main-background {
             position: fixed;
             top: 0;
@@ -29,206 +34,295 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: linear-gradient(180deg, #0d0d21 0%, #1a1a3a 100%);
             overflow: hidden;
         }
-        .parallax-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            will-change: transform;
-        }
+        
         .star {
             position: absolute;
             background: white;
             border-radius: 50%;
-            animation: twinkle 4s infinite ease-in-out;
-            will-change: transform, opacity;
+            animation: twinkle 6s infinite ease-in-out;
         }
-        .asteroid {
-            position: absolute;
-            background-color: #555;
-            border-radius: 30%;
-            animation: float 20s infinite linear;
-        }
-        @keyframes float {
-             0% { transform: translateX(0) rotate(0deg); }
-             100% { transform: translateX(100vw) rotate(360deg); }
-        }
+        
         @keyframes twinkle {
-            0%, 100% { opacity: 0.2; transform: scale(0.5); }
-            50% { opacity: 1; transform: scale(1); }
+            0%, 100% { opacity: 0.1; transform: scale(0.5); }
+            50% { opacity: 0.8; transform: scale(1); }
         }
-
-        /* --- UI ELEMENTS --- */
+        
+        /* UI Elements */
         .pixel-border {
-            border: 4px solid #000;
+            border: 4px solid #1a1a3a;
             box-shadow: 
-                inset 0 0 0 4px #4a00e0,
-                0 0 0 4px #4a00e0;
-            background-color: rgba(10, 10, 26, 0.8);
+                inset 0 0 0 4px #8a2be2,
+                0 0 0 4px #8a2be2;
+            background-color: rgba(13, 13, 33, 0.8);
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
         }
-        .info-box {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .info-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 
-                inset 0 0 0 4px #8a2be2,
-                0 0 0 4px #8a2be2,
-                0 0 20px #ff00ff;
-        }
-        .action-button {
-             background: linear-gradient(45deg, #ff00ff, #8a2be2);
-             transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .action-button:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0 25px #ff00ff;
-        }
-
+        
         .text-glow-neon {
+            color: #fff;
             text-shadow: 0 0 5px #fff, 0 0 10px #ff00ff, 0 0 15px #ff00ff;
         }
         
-        /* --- SCROLL ANIMATIONS --- */
+        /* Marquee Animation */
+        .marquee-container {
+            overflow: hidden;
+            width: 100%;
+            padding: 2rem 0;
+            position: relative;
+        }
+        
+        .marquee-track {
+            display: flex;
+            will-change: transform;
+            animation: marquee 10s linear infinite; /* Faster speed */
+        }
+        
+        .marquee-container:hover .marquee-track {
+            animation-play-state: paused;
+        }
+        
+        @keyframes marquee {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+        
+        .gallery-item {
+            flex-shrink: 0;
+            width: 300px;
+            margin: 0 1rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Scroll Animations */
         .fade-in-section {
             opacity: 0;
             transform: translateY(20px);
             transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-            will-change: opacity, transform;
         }
+        
         .fade-in-section.is-visible {
             opacity: 1;
             transform: translateY(0);
         }
+        
+        /* Buttons */
+        .btn-mint {
+            background: linear-gradient(45deg, #ff00ff, #8a2be2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-mint:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.6);
+        }
+        
+        /* Card Styles */
+        .info-card {
+            background: rgba(26, 26, 58, 0.8);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 2px solid #4a00e0;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .gallery-item {
+                width: 250px;
+            }
+            .hero-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
     </style>
 </head>
-<body class="p-4 sm:p-8">
-
-    <div id="main-background">
-        <div id="parallax-far" class="parallax-layer"></div>
-        <div id="parallax-mid" class="parallax-layer"></div>
-        <div id="parallax-near" class="parallax-layer"></div>
-    </div>
-
-    <div class="container mx-auto max-w-5xl">
-
-        <!-- ========= HERO SECTION ========= -->
-        <header class="h-screen flex flex-col items-center justify-center text-center">
-            <div class="fade-in-section">
-                
-                <div class="pixel-border max-w-2xl mx-auto p-6 md:p-8 mb-12">
-                    <h2 class="text-2xl sm:text-3xl font-pixel text-glow-neon mb-4">Oops, you are late, goobers.</h2>
-                    <p class="text-gray-300 mb-6">Public whitelist now closed.</p>
-                    <p class="text-sm">
-                        Dm to <a href="https://x.com/PixelGoobers" target="_blank" class="text-blue-400 underline">Pixel Goobers</a> for Collab
-                    </p>
+<body>
+    <div id="main-background"></div>
+    
+    <!-- Hero Section -->
+    <section id="home" class="pt-20 pb-16 relative min-h-screen flex items-center">
+        <div class="container mx-auto px-4">
+            <div class="hero-content flex flex-col md:flex-row items-center justify-between">
+                <div class="md:w-1/2 mb-8 md:mb-0">
+                    <h1 class="text-4xl md:text-5xl font-bold text-glow-neon mb-4">PIXEL GOOBERS</h1>
+                    <p class="text-lg mb-6 text-gray-300">Unique Pixel Art Alien PFP Avatars</p>
+                    <div class="grid grid-cols-2 gap-4 mb-8 text-center">
+                        <div class="info-card">
+                            <h3 class="text-sm font-bold mb-2 text-gray-400">Chain:</h3>
+                            <p class="text-purple-300">Ethereum</p>
+                        </div>
+                        <div class="info-card">
+                            <h3 class="text-sm font-bold mb-2 text-gray-400">Mint Price:</h3>
+                            <p class="text-purple-300">0.0007 ETH</p>
+                        </div>
+                        <div class="info-card">
+                            <h3 class="text-sm font-bold mb-2 text-gray-400">Mint Date:</h3>
+                            <p class="text-purple-300">September 16th</p>
+                        </div>
+                        <div class="info-card">
+                            <h3 class="text-sm font-bold mb-2 text-gray-400">Supply:</h3>
+                            <p class="text-purple-300">3333</p>
+                        </div>
+                    </div>
+                    <a href="https://app.blever.xyz/drops/pixel-goobers" target="_blank" class="btn-mint inline-block mr-4">MINT on blever</a>
                 </div>
-
-                <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto text-sm">
-                    <div class="pixel-border info-box p-4">
-                        <p class="text-xs text-gray-400 mb-1">SUPPLY</p>
-                        <p>3,333</p>
-                    </div>
-                    <div class="pixel-border info-box p-4">
-                        <p class="text-xs text-gray-400 mb-1">MINT</p>
-                        <p>0.0007</p>
-                    </div>
-                    <div class="pixel-border info-box p-4">
-                        <p class="text-xs text-gray-400 mb-1">CHAIN</p>
-                        <p>ETH</p>
-                    </div>
-                    <div class="pixel-border info-box p-4">
-                        <p class="text-xs text-gray-400 mb-1">LAUNCH</p>
-                        <p>16th Sep</p>
-                    </div>
+                <div class="md:w-1/2 flex justify-center">
+                    <img src="https://raw.githubusercontent.com/phyllic/PixelGoobers/main/WW8aNfos_400x400.jpg" alt="Pixel Goobers Logo" class="rounded-lg shadow-lg max-w-sm h-auto pixel-border p-2">
                 </div>
-
-                <a href="https://app.blever.xyz/drops/pixel-goobers" target="_blank" class="action-button pixel-border p-4 mt-8 inline-block text-lg">
-                    Mint on blever
-                </a>
-
             </div>
-        </header>
-
-    </div>
-
+        </div>
+    </section>
+    
+    <!-- Collection Gallery -->
+    <section id="collection" class="py-16">
+        <div class="w-full">
+            <h2 class="text-3xl font-bold text-center text-glow-neon mb-12">COLLECTION GALLERY</h2>
+            <div class="marquee-container">
+                <div class="marquee-track" id="gallery-marquee">
+                    <!-- Gallery items will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- About Section -->
+    <section id="about" class="py-16 bg-black bg-opacity-30">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center text-glow-neon mb-12">ABOUT PIXEL GOOBERS</h2>
+            <div class="max-w-4xl mx-auto">
+                <p class="text-lg leading-relaxed mb-6 fade-in-section text-gray-300">
+                    Pixel Goobers is a unique collection of vibrant, retro-inspired pixel art alien PFP avatars. Each character is a one-of-a-kind combination of quirky traits and pop-culture mashups, making every NFT a unique collectible.
+                </p>
+                <p class="text-lg leading-relaxed mb-6 fade-in-section text-gray-300">
+                    What sets us apart is this fusion of 8-bit nostalgia with futuristic and fantasy elements, resulting in a distinctive and memorable art style. Our mission is to make pixel PFP NFTs great again.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+                    <div class="info-card text-center">
+                        <h3 class="text-xl font-bold mb-4 text-purple-300">Unique Traits</h3>
+                        <p class="text-gray-400">Each Goober has its own personality and characteristics.</p>
+                    </div>
+                    <div class="info-card text-center">
+                        <h3 class="text-xl font-bold mb-4 text-purple-300">Retro Vibes</h3>
+                        <p class="text-gray-400">Classic 8-bit aesthetics with modern twists.</p>
+                    </div>
+                    <div class="info-card text-center">
+                        <h3 class="text-xl font-bold mb-4 text-purple-300">Community Focused</h3>
+                        <p class="text-gray-400">Built by enthusiasts for collectors who appreciate quality.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="py-8 bg-gray-900 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <a href="https://x.com/PixelGoobers" target="_blank" class="block mb-4 hover:text-purple-400 text-sm">Follow Pixel Goobers</a>
+            <p class="text-xs text-gray-500">&copy; 2025 Pixel Goobers. All rights reserved.</p>
+        </div>
+    </footer>
+    
     <script>
-        // --- Background & Scroll Animations ---
-        const parallaxFar = document.getElementById('parallax-far');
-        const parallaxMid = document.getElementById('parallax-mid');
-        const parallaxNear = document.getElementById('parallax-near');
-
-        // Create distant stars (small and numerous)
-        for (let i = 0; i < 80; i++) {
-            createStar(parallaxFar, 0.5, 1.5);
+        // Populate gallery with images
+        const gooberImages = [
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/G0AmBRjbkAE5R2K.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/G0FvvFIboAAVvsc.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gz-uuMpa0AATTt0.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gz0YqNkaoAEOtmS.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gz1iMruaIAAX_IK.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gz2KjSoXcAEHjn0.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzxX3xQbMAAfkjY.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gzwmd1vb0AA4wM5.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gzvom0RaAAEKFxK.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzsnBP6aAAAj7MB.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gzsmd80bgAARw0D.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzshWzFaEAAoI2e.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GznYqQEaQAEdQvj.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzX1xK6a4AQTDDm.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gz6NfXEbwAA_UL8.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gz5jkG0bkAAnOtY.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gzk6n8KaIAAc8sG.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzWDS7nbQAAD1xI.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GziILRUaUAALnxP.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzR629JawAAD4ap.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzNjkuPa0AA0sR7.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/Gzf6i6ZbkAInLIR.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzdP3TvbkAMqYRU.jfif",
+            "https://raw.githubusercontent.com/phyllic/PixelGoobers/refs/heads/main/GzauROhbwAAgHNE.jfif"
+        ];
+        
+        const track = document.getElementById('gallery-marquee');
+        
+        function populateGallery(images) {
+            let imageContent = '';
+            images.forEach((url, index) => {
+                const gooberNumber = (index + 1).toString().padStart(4, '0');
+                imageContent += `
+                    <div class="gallery-item">
+                        <img src="${url}" alt="Goober #${gooberNumber}" class="w-full h-auto mb-2 rounded-lg shadow-lg">
+                        <p class="text-xs text-center mt-2">Goobers #${gooberNumber}</p>
+                    </div>
+                `;
+            });
+            track.innerHTML = imageContent + imageContent; // Duplicate for seamless loop
         }
-        // Create mid-ground stars
-        for (let i = 0; i < 40; i++) {
-            createStar(parallaxMid, 1, 2);
-        }
-        // Create near stars (large and fewer)
-        for (let i = 0; i < 15; i++) {
-            createStar(parallaxNear, 1.5, 2.5);
-        }
-        // Create some asteroids
-        for (let i = 0; i < 5; i++) {
-             const asteroid = document.createElement('div');
-             asteroid.className = 'asteroid';
-             const size = Math.random() * 20 + 10;
-             asteroid.style.width = `${size}px`;
-             asteroid.style.height = `${size}px`;
-             asteroid.style.top = `${Math.random() * 100}%`;
-             asteroid.style.left = `-${size}px`; // Start off-screen
-             asteroid.style.animationDuration = `${Math.random() * 20 + 20}s`;
-             asteroid.style.animationDelay = `${Math.random() * 20}s`;
-             parallaxMid.appendChild(asteroid);
-        }
-
-        function createStar(layer, minSize, maxSize) {
+        
+        populateGallery(gooberImages);
+        
+        // Create background stars
+        const background = document.getElementById('main-background');
+        
+        for (let i = 0; i < 100; i++) {
             const star = document.createElement('div');
             star.className = 'star';
-            const size = Math.random() * (maxSize - minSize) + minSize;
+            const size = Math.random() * 2 + 1;
             star.style.width = `${size}px`;
             star.style.height = `${size}px`;
             star.style.top = `${Math.random() * 100}%`;
             star.style.left = `${Math.random() * 100}%`;
-            star.style.animationDelay = `${Math.random() * 4}s`;
-            layer.appendChild(star);
+            star.style.animationDelay = `${Math.random() * 6}s`;
+            background.appendChild(star);
         }
         
-        // Parallax scroll effect
-        window.addEventListener('scroll', () => {
-            const scrollY = window.scrollY;
-            parallaxFar.style.transform = `translateY(${scrollY * 0.1}px)`;
-            parallaxMid.style.transform = `translateY(${scrollY * 0.3}px)`;
-            parallaxNear.style.transform = `translateY(${scrollY * 0.5}px)`;
-        });
-
-
+        // Fade in sections on scroll
         const faders = document.querySelectorAll('.fade-in-section');
-        const appearOptions = {
-            threshold: 0.2,
-            rootMargin: "0px 0px -50px 0px"
-        };
-        const appearOnScroll = new IntersectionObserver(function(entries, appearOnScroll) {
+        const appearOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
+        const appearOnScroll = new IntersectionObserver(function(entries, observer) {
             entries.forEach(entry => {
-                if (!entry.isIntersecting) {
-                    return;
-                } else {
+                if (entry.isIntersecting) {
                     entry.target.classList.add('is-visible');
-                    appearOnScroll.unobserve(entry.target);
+                    observer.unobserve(entry.target);
                 }
             });
         }, appearOptions);
-
+        
         faders.forEach(fader => {
             appearOnScroll.observe(fader);
+        });
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
         });
     </script>
 </body>
